@@ -1,28 +1,29 @@
-from flask import Flask, redirect, request, make_response
+from flask import Flask, request, make_response
 from datetime import datetime
 import uuid
-import os
+from pyairtable import Api
 
 app = Flask(__name__)
 
-visitor_data = []
+API_KEY = "patfVbNtFooligV4r.ad5866b4b280ec7b6d41ebdd7759f0ff1babb6a61b2575900dd3c0d487960af3"
+BASE_ID = "appGAffUHZ28wrxIK"
+TABLE_NAME = "Table 1"
 
-plastic = 0
-can = 0
+api = Api(API_KEY)
+table = api.base(BASE_ID).table(TABLE_NAME)
 
 def choosewaste(typeofwaste,wasteemoji):
-    global visitor_data
     visitor_id = request.cookies.get('visitor_id')
 
     if not visitor_id:
         visitor_id = str(uuid.uuid4())
 
-    ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0]
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     user_agent = request.user_agent.string
     access_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    visitor_data.append({'ip': ip, 'user_agent': user_agent, 'access_time': access_time, 'type': typeofwaste, 'visitor_id': visitor_id})
-
+    #visitor_data.append({'ip': ip, 'user_agent': user_agent, 'access_time': access_time, 'type': typeofwaste, 'visitor_id': visitor_id})
+    table.create({"IP address": ip, "User Agent": user_agent, "Access time": access_time,"Type of waste": typeofwaste,'Visitor ID':visitor_id})
     response = make_response(f"""
     <html lang="en">
     <head>
@@ -89,18 +90,17 @@ def home():
 
 @app.route('/Plastic')
 def Plastic():
-    global plastic
-    plastic += 1
     return choosewaste('Plastic', '🥤')
 
 @app.route('/Can')
 def Can():
-    global can
-    can += 1
     return choosewaste('Can', '🥫')
 
 @app.route('/stats')
 def stats():
+    records = table.all()
+    visitor_data = [record["fields"] for record in records]
+    print(visitor_data)
     # HTML for table header
     table_header = """
     <table style="width: 100%; border-collapse: collapse; background-color: #ffffff; color: #333;">
@@ -121,11 +121,11 @@ def stats():
     for visitor in visitor_data:
         table_rows += f"""
         <tr style="border-bottom: 1px solid #ddd;">
-            <td style="padding: 8px;">{visitor['ip']}</td>
-            <td style="padding: 8px;">{visitor['user_agent']}</td>
-            <td style="padding: 8px;">{visitor['access_time']}</td>
-            <td style="padding: 8px;">{visitor['type']}</td>
-            <td style="padding: 8px;">{visitor['visitor_id']}</td>
+            <td style="padding: 8px;">{visitor['IP address']}</td>
+            <td style="padding: 8px;">{visitor['User Agent']}</td>
+            <td style="padding: 8px;">{visitor['Access time']}</td>
+            <td style="padding: 8px;">{visitor['Type of waste']}</td>
+            <td style="padding: 8px;">{visitor['Visitor ID']}</td>
         </tr>
         """
 
@@ -188,9 +188,9 @@ def stats():
     <body>
         <div class="container">
             <h1>Website Visitor Stats</h1>
-            <p><b>Total Plastic Clicks:</b> {plastic}</p>
-            <p><b>Total Can Clicks:</b> {can}</p>
-            <p><b>Total Unique Visitors:</b> {len(set(visitor['visitor_id'] for visitor in visitor_data))}</p>
+            <p><b>Total Plastic Clicks:</b> {sum(1 for item in visitor_data if item.get("Type of waste") == 'Plastic')}</p>
+            <p><b>Total Can Clicks:</b>{sum(1 for item in visitor_data if item.get("Type of waste") == 'Can')}</p>
+            <p><b>Total Unique Visitors:</b> {len(set(visitor['Visitor ID'] for visitor in visitor_data))}</p>
             <div class="table-wrapper">
                 <h2>Visitor Data</h2>
                 {table_html}
@@ -202,12 +202,5 @@ def stats():
 
     return response_html
 
-@app.route('/reset')
-def reset():
-    global visitor_data
-    visitor_data = []
-    return f'{visitor_data}\n\nDelete data done!\n\n{visitor_data}'
-
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(port=5000)
