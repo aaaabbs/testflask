@@ -113,7 +113,7 @@ def Can():
 def stats():
     records = table.all()
     data = [record["fields"] for record in records]
-    visitor_data = sorted(data, key=lambda x: x["age"])
+    visitor_data = sorted(data, key=lambda x: x["Access time"], reverse=True)
     print(visitor_data)
     # HTML for table header
     table_header = """
