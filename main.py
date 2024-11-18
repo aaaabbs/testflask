@@ -16,7 +16,7 @@ def choosewaste(typeofwaste,wasteemoji):
     if not visitor_id:
         visitor_id = str(uuid.uuid4())
 
-    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0]
     user_agent = request.user_agent.string
     access_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
