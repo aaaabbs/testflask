@@ -204,7 +204,7 @@ def stats():
 @app.route('/reset')
 def reset():
     visitor_data = []
-    return 'Delete data done!'
+    return f'{visitor_data}\n\nDelete data done!\n\n{visitor_data}'
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
