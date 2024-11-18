@@ -112,7 +112,8 @@ def Can():
 @app.route('/stats')
 def stats():
     records = table.all()
-    visitor_data = [record["fields"] for record in records]
+    data = [record["fields"] for record in records]
+    visitor_data = sorted(data, key=lambda x: x["age"])
     print(visitor_data)
     # HTML for table header
     table_header = """
