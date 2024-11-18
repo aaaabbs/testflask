@@ -2,6 +2,7 @@ from flask import Flask, request, make_response
 from datetime import datetime
 import uuid
 from pyairtable import Api
+import threading
 
 app = Flask(__name__)
 
@@ -12,7 +13,7 @@ TABLE_NAME = "Table 1"
 api = Api(API_KEY)
 table = api.base(BASE_ID).table(TABLE_NAME)
 
-def choosewaste(typeofwaste,wasteemoji):
+def choosewaste(typeofwaste, wasteemoji):
     visitor_id = request.cookies.get('visitor_id')
 
     if not visitor_id:
@@ -22,8 +23,20 @@ def choosewaste(typeofwaste,wasteemoji):
     user_agent = request.user_agent.string
     access_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    #visitor_data.append({'ip': ip, 'user_agent': user_agent, 'access_time': access_time, 'type': typeofwaste, 'visitor_id': visitor_id})
-    table.create({"IP address": ip, "User Agent": user_agent, "Access time": access_time,"Type of waste": typeofwaste,'Visitor ID':visitor_id})
+    # Function to handle table.create in a separate thread
+    def log_waste_to_table():
+        table.create({
+            "IP address": ip,
+            "User Agent": user_agent,
+            "Access time": access_time,
+            "Type of waste": typeofwaste,
+            "Visitor ID": visitor_id
+        })
+
+    # Start the logging in a separate thread
+    threading.Thread(target=log_waste_to_table).start()
+
+    # Generate and return the response immediately
     response = make_response(f"""
     <html lang="en">
     <head>
