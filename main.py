@@ -11,6 +11,7 @@ plastic = 0
 can = 0
 
 def choosewaste(typeofwaste,wasteemoji):
+    global visitor_data
     visitor_id = request.cookies.get('visitor_id')
 
     if not visitor_id:
@@ -203,6 +204,7 @@ def stats():
 
 @app.route('/reset')
 def reset():
+    global visitor_data
     visitor_data = []
     return f'{visitor_data}\n\nDelete data done!\n\n{visitor_data}'
 
