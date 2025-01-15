@@ -17,16 +17,16 @@ table_cookie = api.base(BASE_ID).table("Cookies")
 def delete_all_cookies():
     response = make_response("All cookies have been deleted.")
 
-    # Log all cookies in the request
+    # Debug cookies in the request
     print("Cookies in request:", request.cookies)
 
     # Delete all cookies explicitly
     for cookie in request.cookies:
         print(f"Deleting cookie: {cookie}")
-        response.set_cookie(cookie, '', expires=0, path='/', domain=None)
+        response.set_cookie(cookie, '', expires=0, path='/', domain=None, secure=False, httponly=False)
 
-    # Explicitly delete `visitor_id` with specific settings
-    response.set_cookie('visitor_id', '', expires=0, path='/', domain=None)
+    # Explicitly delete visitor_id with additional attributes
+    response.set_cookie('visitor_id', '', expires=0, path='/', domain=None, secure=False, httponly=False)
     print("Response Set-Cookie headers:", response.headers.getlist('Set-Cookie'))
 
     return response
@@ -40,7 +40,9 @@ def form():
         print(visitor_id)
         if not visitor_id:
             visitor_id = str(uuid.uuid4())
+            print(f"Generated new visitor ID: {visitor_id}")
         else:
+            print("Visitor already submitted the form.")
             response = make_response(
                 '''
                 <!DOCTYPE html>
