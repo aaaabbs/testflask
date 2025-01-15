@@ -6,7 +6,6 @@ import threading
 
 app = Flask(__name__)
 
-
 API_KEY = "patfVbNtFooligV4r.ad5866b4b280ec7b6d41ebdd7759f0ff1babb6a61b2575900dd3c0d487960af3"
 BASE_ID = "appGAffUHZ28wrxIK"
 
@@ -228,7 +227,10 @@ def form():
             <h1>Submit Your Information</h1>
             <form method="POST" action="/form">
                 <label for="name">Name:</label>
-                <input type="text" id="name" name="name" required>
+                <input type="text" id="name" name="name" placeholder="Ex: Thitipat Jirataweewong" style="background-color: transparent;" required>
+                <br>
+                <label for="nickname">Nickname:</label>
+                <input type="text" id="nickname" name="nickname" placeholder="Ex: Khaopan" style="background-color: transparent;" required>
                 <br>
                 <label for="grade">Select Grade:</label>
                 <select id="grade" name="grade" required>
