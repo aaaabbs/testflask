@@ -40,6 +40,12 @@ def form():
         # Get visitor_id from cookies or generate a new one
         visitor_id = request.cookies.get('visitor_id')
         print(visitor_id)
+        for cookie in request.cookies:
+        print(f"Deleting cookie: {cookie}")
+        # Delete the cookie for the root path
+        response.set_cookie(cookie, '', expires=0, path='/')
+        # Delete the cookie for the current path
+        response.set_cookie(cookie, '', expires=0, path=request.path)
         if not visitor_id:
             visitor_id = str(uuid.uuid4())
             print(f"Generated new visitor ID: {visitor_id}")
