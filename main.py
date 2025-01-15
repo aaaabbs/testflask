@@ -38,6 +38,7 @@ def delete_all_cookies():
 
     return response
 
+
 @app.route('/form', methods=['GET', 'POST'])
 def form():
     if request.method == 'POST':
