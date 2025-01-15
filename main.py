@@ -17,7 +17,7 @@ table_cookie = api.base(BASE_ID).table("Cookies")
 def delete_all_cookies():
     # Create a response object
     response = make_response("All cookies have been deleted.")
-
+    print("Cookies in request:", request.cookies)
     # Loop through all cookies in the request and set their expiration to the past
     for cookie in request.cookies:
         response.set_cookie(cookie, '', expires=0)
