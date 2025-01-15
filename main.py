@@ -22,7 +22,7 @@ def delete_all_cookies():
     for cookie in request.cookies:
         print(f"Deleting cookie: {cookie}")
         response.set_cookie(cookie, '', expires=0)
-
+    print("cookies in request after delete:", request.cookies)
     return response
 
 @app.route('/form', methods=['GET', 'POST'])
