@@ -29,6 +29,7 @@ def form():
     if request.method == 'POST':
         # Get visitor_id from cookies or generate a new one
         visitor_id = request.cookies.get('visitor_id')
+        print(visitor_id)
         if not visitor_id:
             visitor_id = str(uuid.uuid4())
         else:
