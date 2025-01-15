@@ -113,13 +113,14 @@ def form():
         # Get form data
         name = request.form.get('name')
         grade = request.form.get('grade')
-
+        nickname = request.form.get('nickname')
         # Save to Airtable
         table_cookie.create({
             'Cookie': visitor_id,
             'Name': name,
             'Grade': grade,
             'Last time': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'Nickname': nickname,
         })
 
         # Redirect to the submitted page with a cookie
