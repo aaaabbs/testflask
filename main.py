@@ -20,13 +20,15 @@ def delete_all_cookies():
     # Debug cookies in the request
     print("Cookies in request:", request.cookies)
 
-    # Delete all cookies explicitly
+    # Iterate over all cookies in the request and delete them
     for cookie in request.cookies:
         print(f"Deleting cookie: {cookie}")
-        response.set_cookie(cookie, '', expires=0, path='/', domain=None, secure=False, httponly=False)
+        # Delete the cookie for the root path
+        response.set_cookie(cookie, '', expires=0, path='/')
+        # Delete the cookie for the current path
+        response.set_cookie(cookie, '', expires=0, path=request.path)
 
-    # Explicitly delete visitor_id with additional attributes
-    response.set_cookie('visitor_id', '', expires=0, path='/', domain=None, secure=False, httponly=False)
+    # Debug response headers
     print("Response Set-Cookie headers:", response.headers.getlist('Set-Cookie'))
 
     return response
