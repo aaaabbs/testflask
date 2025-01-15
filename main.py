@@ -20,6 +20,7 @@ def delete_all_cookies():
     print("Cookies in request:", request.cookies)
     # Loop through all cookies in the request and set their expiration to the past
     for cookie in request.cookies:
+        print(f"Deleting cookie: {cookie}")
         response.set_cookie(cookie, '', expires=0)
 
     return response
