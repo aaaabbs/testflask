@@ -16,13 +16,26 @@ table_cookie = api.base(BASE_ID).table("Cookies")
 @app.route('/delete_all_cookiesaofdhgpoewhtr')
 def delete_all_cookies():
     # Create a response object
+    from flask import Flask, request, make_response
+
+app = Flask(__name__)
+
+@app.route('/delete_cookies')
+def delete_all_cookies():
+    # Create a response object
     response = make_response("All cookies have been deleted.")
+
+    # Log the initial cookies from the request
     print("Cookies in request:", request.cookies)
+
     # Loop through all cookies in the request and set their expiration to the past
     for cookie in request.cookies:
         print(f"Deleting cookie: {cookie}")
         response.set_cookie(cookie, '', expires=0)
-    print("cookies in request after delete:", request.cookies)
+
+    # Log the Set-Cookie headers in the response
+    print("Response Set-Cookie headers:", response.headers.getlist('Set-Cookie'))
+
     return response
 
 @app.route('/form', methods=['GET', 'POST'])
