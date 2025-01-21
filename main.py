@@ -272,7 +272,63 @@ def form():
 def choosewaste(typeofwaste, wasteemoji, location):
     visitor_id = request.cookies.get('visitor_id')
 
+    response = make_response(f"""
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{typeofwaste} Waste Contribution</title>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                background-color: #f0f4f7;
+                margin: 0;
+                padding: 0;
+                color: #333;
+                text-align: center;
+            }}
+            h1 {{
+                color: #007BFF;
+                font-size: 2em;
+                margin-top: 50px;
+            }}
+            .message {{
+                font-size: 3em;
+                font-weight: bold;
+                color: #007BFF;
+                margin-top: 30px;
+                padding: 20px;
+                background-color: #ffffff;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+                display: inline-block;
+                margin-bottom: 50px;
+            }}
+            .container {{
+                width: 90%;
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+            }}
+            p {{
+                font-size: 1.2em;
+                color: #444;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Thank you for your participation!</h1>
+            <div class="message">
+                You have put <b>{typeofwaste} waste</b> {wasteemoji} into the bin at {location}!
+            </div>
+        </div>
+    </body>
+    </html>
+    """)
+    
     if not visitor_id:
+        """
         response = make_response(
             '''
             <!DOCTYPE html>
@@ -330,7 +386,10 @@ def choosewaste(typeofwaste, wasteemoji, location):
             </html>
             '''
         )
-        return response
+        """
+        visitor_id = str(uuid.uuid4())
+        response.set_cookie('visitor_id', visitor_id, max_age=60*60*24*365)
+        #return response
 
     ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     user_agent = request.user_agent.string
@@ -351,60 +410,7 @@ def choosewaste(typeofwaste, wasteemoji, location):
     threading.Thread(target=log_waste_to_table).start()
 
     # Generate and return the response immediately
-    response = make_response(f"""
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{typeofwaste} Waste Contribution</title>
-        <style>
-            body {{
-                font-family: Arial, sans-serif;
-                background-color: #f0f4f7;
-                margin: 0;
-                padding: 0;
-                color: #333;
-                text-align: center;
-            }}
-            h1 {{
-                color: #007BFF;
-                font-size: 2em;
-                margin-top: 50px;
-            }}
-            .message {{
-                font-size: 3em;
-                font-weight: bold;
-                color: #007BFF;
-                margin-top: 30px;
-                padding: 20px;
-                background-color: #ffffff;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-                border-radius: 10px;
-                display: inline-block;
-                margin-bottom: 50px;
-            }}
-            .container {{
-                width: 90%;
-                max-width: 800px;
-                margin: 0 auto;
-                padding: 20px;
-            }}
-            p {{
-                font-size: 1.2em;
-                color: #444;
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>Thank you for your participation!</h1>
-            <div class="message">
-                You have put <b>{typeofwaste} waste</b> {wasteemoji} into the bin at {location}!
-            </div>
-        </div>
-    </body>
-    </html>
-    """)
+    
 
     return response
 
